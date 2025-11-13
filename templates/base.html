@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Library Management{% endblock %}</title>
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased">
+  <!-- TOP BAR -->
+  <header class="border-b border-slate-200 bg-white/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+          LM
+        </div>
+        <div>
+          <div class="font-semibold text-slate-900">Library Management</div>
+          <div class="text-xs text-slate-500">Naitei 14 – Python Group 2</div>
+        </div>
+      </div>
+
+      <nav class="hidden sm:flex items-center gap-4 text-sm">
+        <a href="{% url 'library_management:home' %}"
+           class="px-3 py-1.5 rounded-full bg-slate-900 text-white font-medium">
+          Trang chủ
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-200 mt-8">
+    <div class="max-w-6xl mx-auto px-4 py-4 text-xs text-slate-500 flex justify-between">
+      <span>&copy; 2025 Library Management.</span>
+      <span>Built with Django + Tailwind</span>
+    </div>
+  </footer>
+</body>
+</html>
