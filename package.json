@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "lint": "sunlint --all --input=catalog",
+    "lint:changed": "sunlint --all --changed-files",
+    "lint:security": "sunlint --security --input=catalog"
+  },
+  "devDependencies": {
+    "@sun-asterisk/sunlint": "^1.3.31",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3"
+  }
+}
+
+
+

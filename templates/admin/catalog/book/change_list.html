@@ -1,0 +1,38 @@
+{% extends "admin/change_list.html" %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    .object-tools .exportlink {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff !important;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+      border: 1px solid #047857;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(0,0,0,0.12);
+      transition: transform .02s ease, box-shadow .2s ease, filter .2s ease;
+      vertical-align: middle;
+    }
+    .object-tools .exportlink:hover { filter: brightness(1.05); box-shadow: 0 3px 10px rgba(16,185,129,0.35); }
+    .object-tools .exportlink:active { transform: translateY(1px); }
+    /* In case any global CSS injects pseudo icons, disable them to avoid giant icons */
+    .object-tools .exportlink::before { content: none !important; display: none !important; }
+  </style>
+{% endblock %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  
+    <a href="{% url 'admin-export-books' %}?{{ request.GET.urlencode }}" class="exportlink" title="Export current view to Excel">
+      Export Excel
+    </a>
+  
+{% endblock %}
