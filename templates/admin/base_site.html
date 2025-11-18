@@ -1,0 +1,278 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | Library Management Admin{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* Enhanced admin styling */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    #header {
+        background: linear-gradient(135deg, #007cba 0%, #005a87 100%);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    #branding h1 {
+        font-weight: 300;
+        letter-spacing: -0.5px;
+    }
+    
+    #branding h1, #branding h1 a:link, #branding h1 a:visited {
+        color: #fff;
+    }
+    
+    .breadcrumbs {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px 20px;
+    }
+    
+    .breadcrumbs a {
+        color: #007cba;
+    }
+    
+    /* Enhanced table styling */
+    #result_list {
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    #result_list th {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+    
+    #result_list tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    #result_list tr:hover {
+        background: #e3f2fd;
+    }
+    
+    /* Form styling improvements */
+    .form-row {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+    }
+    
+    .form-row:last-child {
+        border-bottom: none;
+    }
+    
+    input[type="text"], input[type="password"], input[type="email"], 
+    input[type="url"], input[type="number"], input[type="tel"], 
+    input[type="date"], textarea, select {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+        border-color: #007cba;
+        box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
+        outline: none;
+    }
+    
+    /* Button improvements */
+    .default, input[type=submit] {
+        background: #007cba;
+        border: 1px solid #007cba;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .default:hover, input[type=submit]:hover {
+        background: #005a87;
+        border-color: #005a87;
+        transform: translateY(-1px);
+    }
+    
+    /* Action buttons */
+    .actions {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .actions select, .actions button {
+        margin-right: 10px;
+    }
+    
+    /* Filter sidebar */
+    #changelist-filter {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 15px;
+    }
+    
+    #changelist-filter h2 {
+        background: #007cba;
+        color: #fff;
+        margin: -15px -15px 15px -15px;
+        padding: 10px 15px;
+        border-radius: 6px 6px 0 0;
+        font-size: 14px;
+    }
+    
+    #changelist-filter h3 {
+        color: #666;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 20px 0 10px 0;
+        padding: 5px 0;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    #changelist-filter a {
+        display: block;
+        padding: 5px 10px;
+        text-decoration: none;
+        color: #333;
+        border-radius: 3px;
+        transition: background 0.2s;
+    }
+    
+    #changelist-filter a:hover {
+        background: #e3f2fd;
+    }
+    
+    #changelist-filter a.selected {
+        background: #007cba;
+        color: #fff;
+    }
+    
+    /* Inline form improvements */
+    .inline-group {
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .inline-group .module h2 {
+        background: #007cba;
+        color: #fff;
+        padding: 10px 15px;
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    /* Message improvements */
+    .messagelist {
+        margin: 0 0 20px 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .messagelist li {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 6px;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        position: relative;
+        padding-left: 45px;
+    }
+    
+    .messagelist li.warning {
+        background: #fff3cd;
+        border-color: #ffeaa7;
+    }
+    
+    .messagelist li.error {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    
+    .messagelist li:before {
+        content: "\f00c";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        left: 15px;
+        top: 12px;
+        color: #155724;
+    }
+    
+    .messagelist li.warning:before {
+        content: "\f071";
+        color: #856404;
+    }
+    
+    .messagelist li.error:before {
+        content: "\f00d";
+        color: #721c24;
+    }
+    
+    /* Dashboard module styling */
+    .dashboard .module {
+        border-radius: 6px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .dashboard .module table {
+        margin-bottom: 0;
+    }
+    
+    .dashboard .module th {
+        background: #007cba;
+        color: #fff;
+    }
+    
+    /* Custom status indicators */
+    .status-available { color: #28a745; font-weight: bold; }
+    .status-loaned { color: #007bff; font-weight: bold; }
+    .status-overdue { color: #dc3545; font-weight: bold; }
+    .status-pending { color: #ffc107; font-weight: bold; }
+    .status-approved { color: #28a745; font-weight: bold; }
+    .status-rejected { color: #dc3545; font-weight: bold; }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        #changelist-filter {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .results {
+            overflow-x: auto;
+        }
+        
+        #result_list {
+            min-width: 800px;
+        }
+    }
+    
+    /* Loading animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-row, .inline-group, #result_list tr {
+        animation: fadeIn 0.3s ease-out;
+    }
+</style>
+{% endblock %}
