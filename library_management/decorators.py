@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import redirect
-from accounts.models. import MemberProfile
+from accounts.models import MemberProfile
 
 def admin_required(view_func):
     def check(user):
