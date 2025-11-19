@@ -9,5 +9,4 @@ urlpatterns = [
     path("borrow/create/<int:book_id>/",views.create_borrow_request,name="create_borrow_request"),
     path( "borrow/history/", views.borrow_history, name="borrow_history"),
     path("borrow/cancel/<int:request_id>/",views.cancel_borrow_request,name="cancel_borrow_request"),
-    path("favorites/", views.favorite_books, name="favorite_books"),
 ]
