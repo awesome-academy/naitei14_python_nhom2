@@ -5,4 +5,7 @@ app_name = "library_management"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("dashboard/", views.admin_dashboard, name="admin_dashboard"),
+    path("borrow/create/<int:book_id>/",views.create_borrow_request,name="create_borrow_request"),
+    path( "borrow/history/", views.borrow_history, name="borrow_history"),
 ]

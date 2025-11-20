@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Lịch sử mượn sách của {{ user.full_name }}</h1>
+
+{% if borrow_requests %}
+<ul>
+    {% for req in borrow_requests %}
+    <li>
+        Yêu cầu #{{ req.id }}:
+        {{ req.requested_from }} → {{ req.requested_to }}
+        - Trạng thái: {{ req.get_status_display }}
+        <ul>
+            {% for item in req.items.all %}
+            <li>{{ item.book.title }} (x{{ item.quantity }})</li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Chưa có yêu cầu mượn nào.</p>
+{% endif %}
+{% endblock %}
