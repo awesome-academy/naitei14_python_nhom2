@@ -26,3 +26,4 @@ class ProfileForm(forms.ModelForm):
             "last_name": forms.TextInput(attrs={"class": "form-input"}),
             "email": forms.EmailInput(attrs={"class": "form-input"}),
         }
+        
