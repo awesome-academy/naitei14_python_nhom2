@@ -67,7 +67,10 @@ class AuthorAdmin(admin.ModelAdmin):
 
     def books_count(self, obj):
         count = obj.books.count()
-        url = reverse("admin:catalog_book_changelist") + f"?authors__id__exact={obj.id}"
+        url = (
+            reverse("admin:catalog_book_changelist")
+            + f"?authors__id__exact={obj.id}"
+        )
         return format_html('<a href="{}">{} books</a>', url, count)
 
     books_count.short_description = "Books"
@@ -110,7 +113,8 @@ class PublisherAdmin(admin.ModelAdmin):
     def books_count(self, obj):
         count = obj.books.count()
         url = (
-            reverse("admin:catalog_book_changelist") + f"?publisher__id__exact={obj.id}"
+            reverse("admin:catalog_book_changelist")
+            + f"?publisher__id__exact={obj.id}"
         )
         return format_html('<a href="{}">{} books</a>', url, count)
 
