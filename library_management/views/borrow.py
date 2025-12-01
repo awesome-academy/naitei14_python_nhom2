@@ -136,3 +136,40 @@ def borrow_history(request):
     }
     return render(request, "library_utilities/borrow_history.html", context)
 
+# ==========================
+#  Cancel: Huy yeu cau muon 
+# ==========================
+@login_required
+def cancel_borrow_request(request, request_id):
+    """
+    Hủy 1 yêu cầu mượn khi đang ở trạng thái PENDING.
+    - Chỉ user sở hữu yêu cầu đó mới được hủy.
+    - Sau khi hủy -> quay lại trang lịch sử mượn.
+    """
+    # Lấy request của đúng user đang đăng nhập
+    borrow_request = get_object_or_404(
+        BorrowRequest,
+        pk=request_id,
+        user=request.user,
+    )
+
+    # Chỉ cho hủy khi đang PENDING
+    if borrow_request.status != BorrowRequest.Status.PENDING:
+        messages.error(
+            request,
+            "Chỉ có thể hủy những yêu cầu đang ở trạng thái 'Đang chờ duyệt'.",
+        )
+        return redirect("library_management:borrow_history")
+
+    if request.method == "POST":
+        borrow_request.status = BorrowRequest.Status.CANCELLED
+        borrow_request.save(update_fields=["status"])
+        messages.success(request, "Đã hủy yêu cầu mượn sách.")
+        return redirect("library_management:borrow_history")
+
+    # Nếu là GET, có thể cho 1 trang confirm đơn giản
+    return render(
+        request,
+        "library_management/cancel_confirm.html",
+        {"borrow_request": borrow_request},
+    )

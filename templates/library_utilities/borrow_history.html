@@ -70,7 +70,6 @@
                 </span>
 
                 <!--  Nút hủy yêu cầu (POST) -->
-                {% comment %}
                 <form method="post" action="{% url 'library_management:cancel_borrow_request' req.id %}">
                     {% csrf_token %}
                     <button type="submit" class="ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
@@ -78,7 +77,7 @@
                         {% trans "Hủy yêu cầu" %}
                     </button>
                 </form>
-                {% endcomment %}
+
                 {% elif req.status == 'APPROVED' %}
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
                                bg-emerald-50 text-emerald-700 border border-emerald-200">

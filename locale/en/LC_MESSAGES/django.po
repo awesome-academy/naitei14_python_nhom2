@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 18:15+0700\n"
+"POT-Creation-Date: 2025-12-01 22:38+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: .\templates\accounts\activation_invalid.html:6
 msgid "Liên kết không hợp lệ | Library Management"
 msgstr "Invalid Link | Library Management"
@@ -42,16 +43,24 @@ msgid "Tài khoản đã được kích hoạt"
 msgstr "Account has been activated"
 
 #: .\templates\accounts\activation_success.html:16
-msgid "\n"
-"    Chào <strong>%(username)s</strong>, tài khoản của bạn đã được kích hoạt thành công.\n"
+#, python-format
+msgid ""
+"\n"
+"    Chào <strong>%(username)s</strong>, tài khoản của bạn đã được kích hoạt "
+"thành công.\n"
 "    "
-msgstr "\n"
-"Hi <strong>%(username)s</strong>, your account has been successfully activated.\n"
+msgstr ""
+"\n"
+"Hi <strong>%(username)s</strong>, your account has been successfully "
+"activated.\n"
 "    "
 
 #: .\templates\accounts\activation_success.html:22
-msgid "Bạn đã được đăng nhập. Bây giờ bạn có thể sử dụng đầy đủ các chức năng của hệ thống."
-msgstr "You are logged in. Now you can use the full functionality of the system."
+msgid ""
+"Bạn đã được đăng nhập. Bây giờ bạn có thể sử dụng đầy đủ các chức năng của "
+"hệ thống."
+msgstr ""
+"You are logged in. Now you can use the full functionality of the system."
 
 #: .\templates\accounts\activation_success.html:27
 msgid "Về trang chính"
@@ -61,6 +70,68 @@ msgstr "Back to main page"
 msgid "Bạn sẽ được chuyển hướng về trang chính sau 3 giây..."
 msgstr "You will be redirected to the main page after 3 seconds..."
 
+#: .\templates\accounts\profile.html:6
+msgid "Hồ sơ cá nhân | Library Management"
+msgstr "Personal Profile | Library Management"
+
+#: .\templates\accounts\profile.html:14 .\templates\base.html:102
+msgid "Hồ sơ cá nhân"
+msgstr "Personal profile"
+
+#: .\templates\accounts\profile.html:17
+msgid "Quản lý thông tin tài khoản và cài đặt của bạn"
+msgstr "Manage your account information and settings"
+
+#: .\templates\accounts\profile.html:27
+msgid "Cập nhật thành công!"
+msgstr "Update successful!"
+
+#: .\templates\accounts\profile.html:34
+msgid "Thông tin tài khoản"
+msgstr "Account information"
+
+#: .\templates\accounts\profile.html:35
+msgid "Cập nhật thông tin cá nhân của bạn"
+msgstr "Update your personal information"
+
+#: .\templates\accounts\profile.html:43 .\templates\accounts\signup.html:24
+#: .\templates\registration\login.html:31
+msgid "Tên đăng nhập"
+msgstr "Username"
+
+#: .\templates\accounts\profile.html:48
+msgid "Không thể thay đổi"
+msgstr "Cannot be changed"
+
+#: .\templates\accounts\profile.html:57
+msgid "Họ"
+msgstr "Surname"
+
+#: .\templates\accounts\profile.html:59
+msgid "Nguyễn"
+msgstr "Nguyen"
+
+#: .\templates\accounts\profile.html:75
+msgid "Tên"
+msgstr "Name"
+
+#: .\templates\accounts\profile.html:77
+msgid "An"
+msgstr "An"
+
+#: .\templates\accounts\profile.html:95 .\templates\accounts\signup.html:41
+msgid "Email"
+msgstr "E-mail"
+
+#: .\templates\accounts\profile.html:121
+#: .\templates\registration\password_change_form.html:24
+msgid "Đổi mật khẩu"
+msgstr "Change password"
+
+#: .\templates\accounts\profile.html:131
+msgid "Lưu thay đổi"
+msgstr "Save changes"
+
 #: .\templates\accounts\signup.html:6
 msgid "Đăng ký tài khoản | Library Management"
 msgstr "Register an account | Library Management"
@@ -69,18 +140,9 @@ msgstr "Register an account | Library Management"
 msgid "Bắt đầu thôi!"
 msgstr "Let's get started!"
 
-#: .\templates\accounts\profile.html:43 .\templates\accounts\signup.html:24
-#: .\templates\registration\login.html:31
-msgid "Tên đăng nhập"
-msgstr "Username"
-
 #: .\templates\accounts\signup.html:29 .\templates\registration\login.html:36
 msgid "vd: ngvan_a"
 msgstr "eg: ngvan_a"
-
-#: .\templates\accounts\profile.html:95 .\templates\accounts\signup.html:41
-msgid "Email"
-msgstr "E-mail"
 
 #: .\templates\accounts\signup.html:58 .\templates\registration\login.html:47
 msgid "Mật khẩu"
@@ -117,11 +179,15 @@ msgid "Chúng tôi đã gửi cho bạn một email kích hoạt tài khoản."
 msgstr "We have sent you an account activation email."
 
 #: .\templates\accounts\signup_done.html:20
-msgid "\n"
-"    Vui lòng kiểm tra hộp thư <strong>(kể cả mục Spam/Junk)</strong> và nhấp vào liên kết kích hoạt để hoàn tất.\n"
+msgid ""
+"\n"
+"    Vui lòng kiểm tra hộp thư <strong>(kể cả mục Spam/Junk)</strong> và nhấp "
+"vào liên kết kích hoạt để hoàn tất.\n"
 "    "
-msgstr "\n"
-"Please check your mailbox <strong>(including Spam/Junk folder)</strong> and click the activation link to complete.\n"
+msgstr ""
+"\n"
+"Please check your mailbox <strong>(including Spam/Junk folder)</strong> and "
+"click the activation link to complete.\n"
 "    "
 
 #: .\templates\base.html:8 .\templates\base.html:24
@@ -156,10 +222,6 @@ msgstr "Borrowing history"
 #: .\templates\base.html:96
 msgid "Tài khoản"
 msgstr "Account"
-
-#: .\templates\accounts\profile.html:14 .\templates\base.html:102
-msgid "Hồ sơ cá nhân"
-msgstr "Personal profile"
 
 #: .\templates\base.html:108 .\templates\library_management\base_admin.html:42
 msgid "Đăng xuất"
@@ -329,59 +391,6 @@ msgstr "Borrowing request"
 msgid "Thống kê"
 msgstr "Statistical"
 
-#: .\templates\library_management\borrow_history.html:6
-msgid "\n"
-"    Lịch sử mượn sách của %(name)s\n"
-"    "
-msgstr "\n"
-"%(name)s Book Borrowing History\n"
-"    "
-
-#: .\templates\library_management\borrow_history.html:15
-msgid "\n"
-"        Yêu cầu #%(req_id)s:\n"
-"        "
-msgstr "\n"
-"Request #%(req_id)s:\n"
-"        "
-
-#: .\templates\library_management\borrow_history.html:21
-msgid "Trạng thái:"
-msgstr "Status:"
-
-#: .\templates\library_management\borrow_history.html:26
-msgid "\n"
-"                %(title)s (x%(quantity)s)\n"
-"                "
-msgstr "\n"
-"                %(title)s (x%(quantity)s)\n"
-"                "
-
-#: .\templates\library_management\borrow_history.html:37
-msgid "Chưa có yêu cầu mượn nào."
-msgstr "There are no loan requests yet."
-
-#: .\templates\library_ultilities\borrow_request_form.html:4
-#: .\templates\library_ultilities\borrow_request_form.html:22
-msgid "Mượn sách"
-msgstr "Borrow books"
-
-#: .\templates\library_ultilities\borrow_request_form.html:56
-msgid "Ngày mượn"
-msgstr "Borrowed date"
-
-#: .\templates\library_management\borrow_request_form.html:27
-msgid "Ngày trả"
-msgstr "Payment date"
-
-#: .\templates\library_ultilities\borrow_request_form.html:83
-msgid "Số lượng"
-msgstr "Quantity"
-
-#: .\templates\library_ultilities\borrow_request_form.html:101
-msgid "Gửi yêu cầu"
-msgstr "Submit request"
-
 #: .\templates\library_management\home.html:4
 msgid "Trang chủ | Library"
 msgstr "Home | Library"
@@ -389,6 +398,120 @@ msgstr "Home | Library"
 #: .\templates\library_management\home.html:15
 msgid "Dashboard demo cho hệ thống quản lý thư viện."
 msgstr "Dashboard demo for library management system."
+
+#: .\templates\library_utilities\borrow_history.html:4
+#: .\templates\library_utilities\borrow_history.html:13
+msgid "Lịch sử mượn sách"
+msgstr "Book borrowing history"
+
+#: .\templates\library_utilities\borrow_history.html:16
+msgid "Danh sách các yêu cầu mượn sách của:"
+msgstr "List of book borrowing requests from:"
+
+#: .\templates\library_utilities\borrow_history.html:23
+#: .\templates\library_utilities\borrow_request_form.html:13
+msgid "Quay lại trang chủ"
+msgstr "Back to home page"
+
+#: .\templates\library_utilities\borrow_history.html:49
+msgid "Chưa có thông tin sách"
+msgstr "No book information yet"
+
+#: .\templates\library_utilities\borrow_history.html:60
+msgid "Tạo lúc"
+msgstr "Created at"
+
+#: .\templates\library_utilities\borrow_history.html:69
+msgid "Đang chờ duyệt"
+msgstr "Pending approval"
+
+#: .\templates\library_utilities\borrow_history.html:77
+#, fuzzy
+#| msgid "Gửi yêu cầu"
+msgid "Hủy yêu cầu"
+msgstr "Submit request"
+
+#: .\templates\library_utilities\borrow_history.html:84
+msgid "Đã được chấp nhận"
+msgstr "Accepted"
+
+#: .\templates\library_utilities\borrow_history.html:89
+msgid "Bị từ chối"
+msgstr "Rejected"
+
+#: .\templates\library_utilities\borrow_history.html:94
+msgid "Đã hủy"
+msgstr "Cancelled"
+
+#: .\templates\library_utilities\borrow_history.html:99
+msgid "Quá hạn"
+msgstr "Overdue"
+
+#: .\templates\library_utilities\borrow_history.html:112
+msgid "Lý do từ chối"
+msgstr "Reason for refusal"
+
+#: .\templates\library_utilities\borrow_history.html:122
+msgid "Bạn chưa có yêu cầu mượn sách nào."
+msgstr "You have not requested to borrow any books yet."
+
+#: .\templates\library_utilities\borrow_history.html:125
+msgid "Hãy chọn một cuốn sách và tạo yêu cầu mượn đầu tiên."
+msgstr "Select a book and create your first loan request."
+
+#: .\templates\library_utilities\borrow_request_form.html:4
+#: .\templates\library_utilities\borrow_request_form.html:22
+msgid "Mượn sách"
+msgstr "Borrow books"
+
+#: .\templates\library_utilities\borrow_request_form.html:25
+#, python-format
+msgid ""
+"\n"
+"            Bạn đang tạo yêu cầu mượn cho\n"
+"            <span class=\"font-medium text-slate-900\">\n"
+"                %(book_title)s\n"
+"            </span>\n"
+"            "
+msgstr ""
+"\n"
+"You are creating a loan request for\n"
+"<span class=\"font-medium text-slate-900\">\n"
+"%(book_title)s\n"
+"</span>\n"
+"            "
+
+#: .\templates\library_utilities\borrow_request_form.html:56
+msgid "Ngày mượn"
+msgstr "Borrowed date"
+
+#: .\templates\library_utilities\borrow_request_form.html:62
+msgid "Ngày bắt đầu mượn sách."
+msgstr "Date the book was borrowed."
+
+#: .\templates\library_utilities\borrow_request_form.html:69
+msgid "Ngày trả dự kiến"
+msgstr "Expected payment date"
+
+#: .\templates\library_utilities\borrow_request_form.html:75
+msgid "Ngày bạn sẽ trả lại sách cho thư viện."
+msgstr "The date you will return the book to the library."
+
+#: .\templates\library_utilities\borrow_request_form.html:83
+msgid "Số lượng"
+msgstr "Quantity"
+
+#: .\templates\library_utilities\borrow_request_form.html:89
+msgid "Số bản bạn muốn mượn (tối đa theo tồn kho)."
+msgstr "Number of copies you want to borrow (maximum by inventory)."
+
+#: .\templates\library_utilities\borrow_request_form.html:97
+msgid "Hủy"
+msgstr "Cancel"
+
+#: .\templates\library_utilities\borrow_request_form.html:101
+msgid "Gửi yêu cầu"
+msgstr "Submit request"
 
 #: .\templates\registration\login.html:6
 msgid "Đăng nhập | Library Management"
@@ -423,11 +546,6 @@ msgstr "Back to profile"
 msgid "Đổi mật khẩu | Library Management"
 msgstr "Change Password | Library Management"
 
-#: .\templates\accounts\profile.html:121
-#: .\templates\registration\password_change_form.html:24
-msgid "Đổi mật khẩu"
-msgstr "Change password"
-
 #: .\templates\registration\password_change_form.html:53
 msgid "Mật khẩu hiện tại"
 msgstr "Current password"
@@ -460,135 +578,38 @@ msgstr "Must not be the same as login name"
 msgid "Cập nhật mật khẩu"
 msgstr "Update password"
 
-#: .\templates\accounts\profile.html:6
-msgid "Hồ sơ cá nhân | Library Management"
-msgstr "Personal Profile | Library Management"
+#~ msgid ""
+#~ "\n"
+#~ "    Lịch sử mượn sách của %(name)s\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "%(name)s Book Borrowing History\n"
+#~ "    "
 
-#: .\templates\accounts\profile.html:17
-msgid "Quản lý thông tin tài khoản và cài đặt của bạn"
-msgstr "Manage your account information and settings"
+#~ msgid ""
+#~ "\n"
+#~ "        Yêu cầu #%(req_id)s:\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "Request #%(req_id)s:\n"
+#~ "        "
 
-#: .\templates\accounts\profile.html:27
-msgid "Cập nhật thành công!"
-msgstr "Update successful!"
+#~ msgid "Trạng thái:"
+#~ msgstr "Status:"
 
-#: .\templates\accounts\profile.html:34
-msgid "Thông tin tài khoản"
-msgstr "Account information"
+#~ msgid ""
+#~ "\n"
+#~ "                %(title)s (x%(quantity)s)\n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "                %(title)s (x%(quantity)s)\n"
+#~ "                "
 
-#: .\templates\accounts\profile.html:35
-msgid "Cập nhật thông tin cá nhân của bạn"
-msgstr "Update your personal information"
+#~ msgid "Chưa có yêu cầu mượn nào."
+#~ msgstr "There are no loan requests yet."
 
-#: .\templates\accounts\profile.html:48
-msgid "Không thể thay đổi"
-msgstr "Cannot be changed"
-
-#: .\templates\accounts\profile.html:57
-msgid "Họ"
-msgstr "Surname"
-
-#: .\templates\accounts\profile.html:59
-msgid "Nguyễn"
-msgstr "Nguyen"
-
-#: .\templates\accounts\profile.html:75
-msgid "Tên"
-msgstr "Name"
-
-#: .\templates\accounts\profile.html:77
-msgid "An"
-msgstr "An"
-
-#: .\templates\accounts\profile.html:131
-msgid "Lưu thay đổi"
-msgstr "Save changes"
-
-#: .\templates\library_ultilities\borrow_history.html:4
-#: .\templates\library_ultilities\borrow_history.html:13
-msgid "Lịch sử mượn sách"
-msgstr "Book borrowing history"
-
-#: .\templates\library_ultilities\borrow_history.html:16
-msgid "Danh sách các yêu cầu mượn sách của:"
-msgstr "List of book borrowing requests from:"
-
-#: .\templates\library_ultilities\borrow_history.html:23
-#: .\templates\library_ultilities\borrow_request_form.html:13
-msgid "Quay lại trang chủ"
-msgstr "Back to home page"
-
-#: .\templates\library_ultilities\borrow_history.html:49
-msgid "Chưa có thông tin sách"
-msgstr "No book information yet"
-
-#: .\templates\library_ultilities\borrow_history.html:60
-msgid "Tạo lúc"
-msgstr "Created at"
-
-#: .\templates\library_ultilities\borrow_history.html:69
-msgid "Đang chờ duyệt"
-msgstr "Pending approval"
-
-#: .\templates\library_ultilities\borrow_history.html:86
-msgid "Đã được chấp nhận"
-msgstr "Accepted"
-
-#: .\templates\library_ultilities\borrow_history.html:91
-msgid "Bị từ chối"
-msgstr "Rejected"
-
-#: .\templates\library_ultilities\borrow_history.html:96
-msgid "Đã hủy"
-msgstr "Cancelled"
-
-#: .\templates\library_ultilities\borrow_history.html:101
-msgid "Quá hạn"
-msgstr "Overdue"
-
-#: .\templates\library_ultilities\borrow_history.html:114
-msgid "Lý do từ chối"
-msgstr "Reason for refusal"
-
-#: .\templates\library_ultilities\borrow_history.html:124
-msgid "Bạn chưa có yêu cầu mượn sách nào."
-msgstr "You have not requested to borrow any books yet."
-
-#: .\templates\library_ultilities\borrow_history.html:127
-msgid "Hãy chọn một cuốn sách và tạo yêu cầu mượn đầu tiên."
-msgstr "Select a book and create your first loan request."
-
-#: .\templates\library_ultilities\borrow_request_form.html:25
-msgid "\n"
-"            Bạn đang tạo yêu cầu mượn cho\n"
-"            <span class=\"font-medium text-slate-900\">\n"
-"                %(book_title)s\n"
-"            </span>\n"
-"            "
-msgstr "\n"
-"You are creating a loan request for\n"
-"<span class=\"font-medium text-slate-900\">\n"
-"%(book_title)s\n"
-"</span>\n"
-"            "
-
-#: .\templates\library_ultilities\borrow_request_form.html:62
-msgid "Ngày bắt đầu mượn sách."
-msgstr "Date the book was borrowed."
-
-#: .\templates\library_ultilities\borrow_request_form.html:69
-msgid "Ngày trả dự kiến"
-msgstr "Expected payment date"
-
-#: .\templates\library_ultilities\borrow_request_form.html:75
-msgid "Ngày bạn sẽ trả lại sách cho thư viện."
-msgstr "The date you will return the book to the library."
-
-#: .\templates\library_ultilities\borrow_request_form.html:89
-msgid "Số bản bạn muốn mượn (tối đa theo tồn kho)."
-msgstr "Number of copies you want to borrow (maximum by inventory)."
-
-#: .\templates\library_ultilities\borrow_request_form.html:97
-msgid "Hủy"
-msgstr "Cancel"
-
+#~ msgid "Ngày trả"
+#~ msgstr "Payment date"

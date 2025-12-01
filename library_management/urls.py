@@ -4,6 +4,7 @@ from .views import (
     admin_dashboard,
     create_borrow_request,
     borrow_history,
+    cancel_borrow_request
 )
 
 
@@ -16,4 +17,5 @@ urlpatterns = [
     path("borrow/create/<int:book_id>/", create_borrow_request, 
          name="create_borrow_request"),
     path("borrow/history/", borrow_history, name="borrow_history"),
+    path("borrow/cancel/<int:request_id>/",cancel_borrow_request,name="cancel_borrow_request"),
 ]
