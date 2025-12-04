@@ -61,9 +61,7 @@ class Category(models.Model):
 class Book(models.Model):
     title = models.CharField(max_length=500)
     description = models.TextField(blank=True, null=True)
-    isbn13 = models.CharField(
-        max_length=13, unique=True, blank=True, null=True
-    )
+    isbn13 = models.CharField(max_length=13, unique=True, blank=True, null=True)
     publish_year = models.SmallIntegerField(blank=True, null=True)
     pages = models.IntegerField(blank=True, null=True)
     cover_url = models.CharField(max_length=500, blank=True, null=True)
