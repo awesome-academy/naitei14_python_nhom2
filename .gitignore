@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # venv
 venv/
 
@@ -24,4 +25,7 @@ node_modules/
 
 # Other
 base-project/
-
+=======
+base-project/
+.env
+>>>>>>> 8b3d86f (create-model-init-mysql)
