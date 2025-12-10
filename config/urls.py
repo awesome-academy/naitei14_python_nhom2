@@ -23,19 +23,29 @@ from catalog import admin_views
 
 def home_redirect(request):
     """Redirect root URL to admin interface"""
-    return redirect("/admin/")
+    return redirect('/admin/')
 
 
 urlpatterns = [
-    # path('superadmin/', admin.site.urls),
-    # path('', include('library_management.urls')),
-    # path('accounts/', include('accounts.urls')),
     path("", home_redirect, name="home"),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("i18n/", include("django.conf.urls.i18n")),
-    path("admin/", admin.site.urls),
-    # Admin API endpoints for categories
-    path("admin/api/stats/", admin_views.admin_stats_api, name="admin_stats_api"),
+    # Place API endpoints BEFORE the admin.urls to avoid 404 from
+    # admin's resolver
+    path(
+        "admin/api/stats/",
+        admin_views.admin_stats_api,
+        name="admin-stats-api",
+    ),
+    path(
+        "admin/api/activity/",
+        admin_views.admin_activity_api,
+        name="admin-activity-api",
+    ),
+    path(
+        "admin/export/books/",
+        admin_views.export_books_excel,
+        name="admin-export-books",
+    ),
+    # Additional existing API endpoints
     path(
         "admin/api/category-stats/",
         admin_views.category_stats_api,
@@ -55,9 +65,6 @@ urlpatterns = [
         "admin/api/category-export/",
         admin_views.category_export_api,
         name="admin_category_export_api",
-    ),
-    path(
-        "admin/api/activity/", admin_views.admin_activity_api, name="admin_activity_api"
     ),
     # Publisher API endpoints
     path(
@@ -98,11 +105,6 @@ urlpatterns = [
         name="admin_export_categories_excel",
     ),
     path(
-        "admin/export/books/",
-        admin_views.export_books_excel,
-        name="admin_export_books_excel",
-    ),
-    path(
         "admin/export/publishers/",
         admin_views.export_publishers_excel,
         name="admin_export_publishers_excel",
@@ -112,4 +114,5 @@ urlpatterns = [
         admin_views.export_authors_excel,
         name="admin_export_authors_excel",
     ),
+    path("admin/", admin.site.urls),
 ]

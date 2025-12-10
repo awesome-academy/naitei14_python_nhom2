@@ -890,6 +890,7 @@ class BorrowRequestAdmin(admin.ModelAdmin):
     autocomplete_fields = ["book_item"]
     actions = ["return_books", "mark_books_as_lost"]
     exclude = ("decision_at", "requested_to")
+    readonly_fields = ("requested_from",)
 
     def has_delete_permission(self, request, obj=None):
         return False
