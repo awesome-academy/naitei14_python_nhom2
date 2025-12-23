@@ -3,7 +3,6 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 from django.db.models import Q, Count
 from datetime import datetime
-import re
 
 from ..models import Category, Book, Publisher, Author
 
@@ -44,26 +43,39 @@ DEFAULT_AUTHOR_COLUMNS = [
 
 
 def build_category_queryset(params, include_books=False):
-    """Build category queryset based on filter parameters."""
+    """Build category queryset based on filter parameters.
+
+    Supports both custom API parameters and Django admin filter format.
+    """
     qs = Category.objects.all()
 
-    # Search by name or description
+    # Search by name or description (Django admin uses 'q')
     if "q" in params and params["q"].strip():
         q = params["q"].strip()
         qs = qs.filter(
             Q(name__icontains=q) | Q(description__icontains=q) | Q(slug__icontains=q)
         )
 
-    # Filter by parent category
-    if "parent_id" in params and params["parent_id"]:
+    # Filter by parent category - support both formats
+    parent_id = (
+        params.get("parent_id") or
+        params.get("parent__id__exact") or
+        params.get("parent__id")
+    )
+    if parent_id:
         try:
-            parent_id = int(params["parent_id"])
+            parent_id = int(parent_id)
             if parent_id == 0:  # Top-level categories
                 qs = qs.filter(parent=None)
             else:
                 qs = qs.filter(parent_id=parent_id)
         except (ValueError, TypeError):
             pass
+
+    # Support Django admin's parent__isnull filter
+    if "parent__isnull" in params:
+        is_null = params["parent__isnull"].lower() in ["true", "1", "yes"]
+        qs = qs.filter(parent__isnull=is_null)
 
     # Filter by minimum books count
     if "min_books" in params and params["min_books"]:
@@ -220,9 +232,9 @@ def render_categories_workbook(queryset, columns=None, include_books=False):
         max_length = 0
         for row in ws[column_letter]:
             try:
-                if len(str(row.value)) > max_length:
-                    max_length = len(str(row.value))
-            except Exception:
+                if row.value is not None:
+                    max_length = max(max_length, len(str(row.value)))
+            except (TypeError, AttributeError):
                 pass
         adjusted_width = min(max_length + 2, 50)  # Cap at 50 characters
         ws.column_dimensions[column_letter].width = adjusted_width
@@ -284,9 +296,9 @@ def render_categories_workbook(queryset, columns=None, include_books=False):
             max_length = 0
             for row in books_ws[column_letter]:
                 try:
-                    if len(str(row.value)) > max_length:
-                        max_length = len(str(row.value))
-                except Exception:
+                    if row.value is not None:
+                        max_length = max(max_length, len(str(row.value)))
+                except (TypeError, AttributeError):
                     pass
             adjusted_width = min(max_length + 2, 50)
             books_ws.column_dimensions[column_letter].width = adjusted_width
@@ -298,46 +310,71 @@ def build_book_queryset(params, include_items=False):
     """
     Build book queryset based on filter parameters.
 
-    For compatibility with base project.
+    Supports both custom API parameters and Django admin filter format.
     """
     qs = Book.objects.all()
 
-    # Search by title, description, or ISBN
+    # Search by title, description, or ISBN (Django admin uses 'q')
     if "q" in params and params["q"].strip():
         q = params["q"].strip()
         qs = qs.filter(
             Q(title__icontains=q) | Q(description__icontains=q) | Q(isbn13__icontains=q)
         )
 
-    # Filter by category
-    if "category_id" in params and params["category_id"]:
+    # Filter by category - support both formats
+    category_id = (
+        params.get("category_id") or
+        params.get("categories__id__exact") or
+        params.get("categories__id")
+    )
+    if category_id:
         try:
-            category_id = int(params["category_id"])
-            qs = qs.filter(categories__id=category_id)
+            qs = qs.filter(categories__id=int(category_id))
         except (ValueError, TypeError):
             pass
 
-    # Filter by author
-    if "author_id" in params and params["author_id"]:
+    # Filter by author - support both formats
+    author_id = (
+        params.get("author_id") or
+        params.get("authors__id__exact") or
+        params.get("authors__id")
+    )
+    if author_id:
         try:
-            author_id = int(params["author_id"])
-            qs = qs.filter(authors__id=author_id)
+            qs = qs.filter(authors__id=int(author_id))
         except (ValueError, TypeError):
             pass
 
-    # Filter by publisher
-    if "publisher_id" in params and params["publisher_id"]:
+    # Filter by publisher - support both formats
+    publisher_id = (
+        params.get("publisher_id") or
+        params.get("publisher__id__exact") or
+        params.get("publisher__id")
+    )
+    if publisher_id:
         try:
-            publisher_id = int(params["publisher_id"])
-            qs = qs.filter(publisher_id=publisher_id)
+            qs = qs.filter(publisher_id=int(publisher_id))
         except (ValueError, TypeError):
             pass
 
-    # Filter by language
-    if "language" in params and params["language"].strip():
-        qs = qs.filter(language_code__icontains=params["language"].strip())
+    # Filter by language - support both formats
+    language = (
+        params.get("language") or
+        params.get("language_code") or
+        params.get("language_code__exact")
+    )
+    if language and language.strip():
+        qs = qs.filter(language_code__icontains=language.strip())
 
-    # Date range filters
+    # Filter by publish year
+    publish_year = params.get("publish_year") or params.get("publish_year__exact")
+    if publish_year:
+        try:
+            qs = qs.filter(publish_year=int(publish_year))
+        except (ValueError, TypeError):
+            pass
+
+    # Date range filters - custom format
     if "created_from" in params and params["created_from"]:
         try:
             from_date = datetime.strptime(params["created_from"], "%Y-%m-%d").date()
@@ -349,6 +386,37 @@ def build_book_queryset(params, include_items=False):
         try:
             to_date = datetime.strptime(params["created_to"], "%Y-%m-%d").date()
             qs = qs.filter(created_at__date__lte=to_date)
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin date_hierarchy filters (created_at__year, etc.)
+    if "created_at__year" in params:
+        try:
+            qs = qs.filter(created_at__year=int(params["created_at__year"]))
+        except (ValueError, TypeError):
+            pass
+    if "created_at__month" in params:
+        try:
+            qs = qs.filter(created_at__month=int(params["created_at__month"]))
+        except (ValueError, TypeError):
+            pass
+    if "created_at__day" in params:
+        try:
+            qs = qs.filter(created_at__day=int(params["created_at__day"]))
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin date range filters (created_at__gte, created_at__lt)
+    if "created_at__gte" in params:
+        try:
+            from_date = datetime.strptime(params["created_at__gte"], "%Y-%m-%d")
+            qs = qs.filter(created_at__gte=from_date)
+        except (ValueError, TypeError):
+            pass
+    if "created_at__lt" in params:
+        try:
+            to_date = datetime.strptime(params["created_at__lt"], "%Y-%m-%d")
+            qs = qs.filter(created_at__lt=to_date)
         except (ValueError, TypeError):
             pass
 
@@ -397,15 +465,26 @@ def render_books_workbook(queryset, columns=None, include_items=False):
 
 
 def build_publisher_queryset(params, include_books=False):
-    """Build publisher queryset based on filter parameters."""
+    """Build publisher queryset based on filter parameters.
+
+    Supports both custom API parameters and Django admin filter format.
+    """
     qs = Publisher.objects.all()
 
-    # Search by name, description, or website
+    # Search by name, description, or website (Django admin uses 'q')
     if "q" in params and params["q"].strip():
         q = params["q"].strip()
         qs = qs.filter(
             Q(name__icontains=q) | Q(description__icontains=q) | Q(website__icontains=q)
         )
+
+    # Filter by founded year - support both formats
+    founded_year = params.get("founded_year") or params.get("founded_year__exact")
+    if founded_year:
+        try:
+            qs = qs.filter(founded_year=int(founded_year))
+        except (ValueError, TypeError):
+            pass
 
     # Filter by founded year range
     if "founded_year_from" in params and params["founded_year_from"]:
@@ -450,7 +529,7 @@ def build_publisher_queryset(params, include_books=False):
     ]:
         qs = qs.filter(Q(website="") | Q(website__isnull=True))
 
-    # Date range filters for creation date
+    # Date range filters for creation date - custom format
     if "created_from" in params and params["created_from"]:
         try:
             from_date = datetime.strptime(params["created_from"], "%Y-%m-%d").date()
@@ -462,6 +541,37 @@ def build_publisher_queryset(params, include_books=False):
         try:
             to_date = datetime.strptime(params["created_to"], "%Y-%m-%d").date()
             qs = qs.filter(created_at__date__lte=to_date)
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin date_hierarchy filters (created_at__year, etc.)
+    if "created_at__year" in params:
+        try:
+            qs = qs.filter(created_at__year=int(params["created_at__year"]))
+        except (ValueError, TypeError):
+            pass
+    if "created_at__month" in params:
+        try:
+            qs = qs.filter(created_at__month=int(params["created_at__month"]))
+        except (ValueError, TypeError):
+            pass
+    if "created_at__day" in params:
+        try:
+            qs = qs.filter(created_at__day=int(params["created_at__day"]))
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin date range filters
+    if "created_at__gte" in params:
+        try:
+            from_date = datetime.strptime(params["created_at__gte"], "%Y-%m-%d")
+            qs = qs.filter(created_at__gte=from_date)
+        except (ValueError, TypeError):
+            pass
+    if "created_at__lt" in params:
+        try:
+            to_date = datetime.strptime(params["created_at__lt"], "%Y-%m-%d")
+            qs = qs.filter(created_at__lt=to_date)
         except (ValueError, TypeError):
             pass
 
@@ -574,9 +684,9 @@ def render_publishers_workbook(queryset, columns=None, include_books=False):
         max_length = 0
         for row in ws[column_letter]:
             try:
-                if len(str(row.value)) > max_length:
-                    max_length = len(str(row.value))
-            except Exception:
+                if row.value is not None:
+                    max_length = max(max_length, len(str(row.value)))
+            except (TypeError, AttributeError):
                 pass
         adjusted_width = min(max_length + 2, 50)  # Cap at 50 characters
         ws.column_dimensions[column_letter].width = adjusted_width
@@ -643,9 +753,9 @@ def render_publishers_workbook(queryset, columns=None, include_books=False):
             max_length = 0
             for row in books_ws[column_letter]:
                 try:
-                    if len(str(row.value)) > max_length:
-                        max_length = len(str(row.value))
-                except Exception:
+                    if row.value is not None:
+                        max_length = max(max_length, len(str(row.value)))
+                except (TypeError, AttributeError):
                     pass
             adjusted_width = min(max_length + 2, 50)
             books_ws.column_dimensions[column_letter].width = adjusted_width
@@ -654,13 +764,21 @@ def render_publishers_workbook(queryset, columns=None, include_books=False):
 
 
 def build_author_queryset(params, include_books=False):
-    """Build author queryset based on filter parameters."""
+    """Build author queryset based on filter parameters.
+
+    Supports both custom API parameters and Django admin filter format.
+    """
     qs = Author.objects.all()
 
-    # Search by name or biography
+    # Search by name or biography (Django admin uses 'q')
     if "q" in params and params["q"].strip():
         q = params["q"].strip()
         qs = qs.filter(Q(name__icontains=q) | Q(biography__icontains=q))
+
+    # Support Django admin's death_date__isnull filter for living/deceased
+    if "death_date__isnull" in params:
+        is_null = params["death_date__isnull"].lower() in ["true", "1", "yes"]
+        qs = qs.filter(death_date__isnull=is_null)
 
     # Filter by birth year range
     if "birth_year_from" in params and params["birth_year_from"]:
@@ -734,7 +852,7 @@ def build_author_queryset(params, include_books=False):
     ]:
         qs = qs.filter(death_date__isnull=False)
 
-    # Date range filters for creation date
+    # Date range filters for creation date - custom format
     if "created_from" in params and params["created_from"]:
         try:
             from_date = datetime.strptime(params["created_from"], "%Y-%m-%d").date()
@@ -746,6 +864,85 @@ def build_author_queryset(params, include_books=False):
         try:
             to_date = datetime.strptime(params["created_to"], "%Y-%m-%d").date()
             qs = qs.filter(created_at__date__lte=to_date)
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin date_hierarchy filters (created_at__year, etc.)
+    if "created_at__year" in params:
+        try:
+            qs = qs.filter(created_at__year=int(params["created_at__year"]))
+        except (ValueError, TypeError):
+            pass
+    if "created_at__month" in params:
+        try:
+            qs = qs.filter(created_at__month=int(params["created_at__month"]))
+        except (ValueError, TypeError):
+            pass
+    if "created_at__day" in params:
+        try:
+            qs = qs.filter(created_at__day=int(params["created_at__day"]))
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin date range filters
+    if "created_at__gte" in params:
+        try:
+            from_date = datetime.strptime(params["created_at__gte"], "%Y-%m-%d")
+            qs = qs.filter(created_at__gte=from_date)
+        except (ValueError, TypeError):
+            pass
+    if "created_at__lt" in params:
+        try:
+            to_date = datetime.strptime(params["created_at__lt"], "%Y-%m-%d")
+            qs = qs.filter(created_at__lt=to_date)
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin birth_date date filters
+    if "birth_date__year" in params:
+        try:
+            qs = qs.filter(birth_date__year=int(params["birth_date__year"]))
+        except (ValueError, TypeError):
+            pass
+    if "birth_date__month" in params:
+        try:
+            qs = qs.filter(birth_date__month=int(params["birth_date__month"]))
+        except (ValueError, TypeError):
+            pass
+    if "birth_date__gte" in params:
+        try:
+            from_date = datetime.strptime(params["birth_date__gte"], "%Y-%m-%d").date()
+            qs = qs.filter(birth_date__gte=from_date)
+        except (ValueError, TypeError):
+            pass
+    if "birth_date__lt" in params:
+        try:
+            to_date = datetime.strptime(params["birth_date__lt"], "%Y-%m-%d").date()
+            qs = qs.filter(birth_date__lt=to_date)
+        except (ValueError, TypeError):
+            pass
+
+    # Django admin death_date date filters
+    if "death_date__year" in params:
+        try:
+            qs = qs.filter(death_date__year=int(params["death_date__year"]))
+        except (ValueError, TypeError):
+            pass
+    if "death_date__month" in params:
+        try:
+            qs = qs.filter(death_date__month=int(params["death_date__month"]))
+        except (ValueError, TypeError):
+            pass
+    if "death_date__gte" in params:
+        try:
+            from_date = datetime.strptime(params["death_date__gte"], "%Y-%m-%d").date()
+            qs = qs.filter(death_date__gte=from_date)
+        except (ValueError, TypeError):
+            pass
+    if "death_date__lt" in params:
+        try:
+            to_date = datetime.strptime(params["death_date__lt"], "%Y-%m-%d").date()
+            qs = qs.filter(death_date__lt=to_date)
         except (ValueError, TypeError):
             pass
 
@@ -891,9 +1088,9 @@ def render_authors_workbook(queryset, columns=None, include_books=False):
         max_length = 0
         for row in ws[column_letter]:
             try:
-                if len(str(row.value)) > max_length:
-                    max_length = len(str(row.value))
-            except Exception:
+                if row.value is not None:
+                    max_length = max(max_length, len(str(row.value)))
+            except (TypeError, AttributeError):
                 pass
         adjusted_width = min(max_length + 2, 50)  # Cap at 50 characters
         ws.column_dimensions[column_letter].width = adjusted_width
@@ -964,9 +1161,9 @@ def render_authors_workbook(queryset, columns=None, include_books=False):
             max_length = 0
             for row in books_ws[column_letter]:
                 try:
-                    if len(str(row.value)) > max_length:
-                        max_length = len(str(row.value))
-                except Exception:
+                    if row.value is not None:
+                        max_length = max(max_length, len(str(row.value)))
+                except (TypeError, AttributeError):
                     pass
             adjusted_width = min(max_length + 2, 50)
             books_ws.column_dimensions[column_letter].width = adjusted_width

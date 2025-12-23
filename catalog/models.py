@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from datetime import timedelta
 
@@ -253,7 +254,9 @@ class BookRating(models.Model):
         on_delete=models.CASCADE,
         related_name="ratings",
     )
-    rating = models.PositiveSmallIntegerField()  # TINYINT
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     review = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -330,6 +333,7 @@ class BorrowRequest(models.Model):
         return f"Request #{self.id} by {self.user}"
 
     def clean(self):
+        # For new records
         if not self.pk:
             if self.status not in [
                 self.Status.PENDING,
@@ -339,63 +343,63 @@ class BorrowRequest(models.Model):
                 raise ValidationError(
                     "New requests can only be Pending, Approved, or Rejected."
                 )
+            # Validate book_item availability for new approved requests
+            if self.status == self.Status.APPROVED:
+                if not self.book_item:
+                    raise ValidationError("Book item is required for approval.")
+                if self.book_item.status != BookItem.Status.AVAILABLE:
+                    raise ValidationError(
+                        f"Book item {self.book_item.barcode} is not available "
+                        f"(Status: {self.book_item.get_status_display()})."
+                    )
+            return
 
-        if self.pk:
-            old_instance = BorrowRequest.objects.get(pk=self.pk)
+        # For existing records - fetch old_instance once
+        old_instance = BorrowRequest.objects.get(pk=self.pk)
+        old_status = old_instance.status
 
-            # Prevent editing if already returned
-            if old_instance.status == self.Status.RETURNED:
+        # Prevent editing if already returned
+        if old_status == self.Status.RETURNED:
+            raise ValidationError(
+                "Cannot edit a request that has already been returned."
+            )
+
+        # If status was APPROVED, only allow transition to
+        # RETURNED, LOST, or OVERDUE
+        if old_status == self.Status.APPROVED:
+            if self.status not in [
+                self.Status.APPROVED,
+                self.Status.RETURNED,
+                self.Status.LOST,
+                self.Status.OVERDUE,
+            ]:
                 raise ValidationError(
-                    "Cannot edit a request that has already been returned."
+                    "Approved requests can only be changed to "
+                    "Returned, Lost, or Overdue."
                 )
 
-            # If status was APPROVED, only allow transition to
-            # RETURNED, LOST, or OVERDUE
-            if old_instance.status == self.Status.APPROVED:
-                if self.status not in [
-                    self.Status.APPROVED,
-                    self.Status.RETURNED,
-                    self.Status.LOST,
-                    self.Status.OVERDUE,
-                ]:
-                    raise ValidationError(
-                        "Approved requests can only be changed to "
-                        "Returned, Lost, or Overdue."
-                    )
-
+        # Validate approval requirements
         if self.status == self.Status.APPROVED:
             if not self.book_item:
                 raise ValidationError("Book item is required for approval.")
-
-            if self.pk:
-                old_instance = BorrowRequest.objects.get(pk=self.pk)
-                if old_instance.status != self.Status.APPROVED:
-                    if self.book_item.status != BookItem.Status.AVAILABLE:
-                        raise ValidationError(
-                            f"Book item {self.book_item.barcode} is not available "
-                            f"(Status: {self.book_item.get_status_display()})."
-                        )
-            else:
-                if (
-                    self.book_item
-                    and self.book_item.status != BookItem.Status.AVAILABLE
-                ):
+            # Only check availability if transitioning to APPROVED
+            if old_status != self.Status.APPROVED:
+                if self.book_item.status != BookItem.Status.AVAILABLE:
                     raise ValidationError(
                         f"Book item {self.book_item.barcode} is not available "
                         f"(Status: {self.book_item.get_status_display()})."
                     )
 
+        # Validate return requirements
         if self.status == self.Status.RETURNED:
-            if self.pk:
-                old_instance = BorrowRequest.objects.get(pk=self.pk)
-                if old_instance.status not in [
-                    self.Status.APPROVED,
-                    self.Status.OVERDUE,
-                    self.Status.LOST,
-                ]:
-                    raise ValidationError(
-                        "Only approved, overdue, or lost requests can be returned."
-                    )
+            if old_status not in [
+                self.Status.APPROVED,
+                self.Status.OVERDUE,
+                self.Status.LOST,
+            ]:
+                raise ValidationError(
+                    "Only approved, overdue, or lost requests can be returned."
+                )
 
     def save(self, *args, **kwargs):
         old_status = None
